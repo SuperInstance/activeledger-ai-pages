@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>activeledger.ai - AI Demo</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; }
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+        header { text-align: center; padding: 3rem 0; border-bottom: 1px solid #1a1a2e; margin-bottom: 2rem; }
+        h1 { font-size: 2.5rem; background: linear-gradient(135deg, #00d4ff, #7b2fff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.5rem; }
+        .subtitle { color: #888; font-size: 1.1rem; }
+        .status-bar { display: flex; gap: 1rem; justify-content: center; margin-top: 1rem; flex-wrap: wrap; }
+        .status-item { background: #12121a; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; border: 1px solid #2a2a3e; }
+        .status-item.online { border-color: #00ff88; color: #00ff88; }
+        .chat-container { background: #12121a; border-radius: 16px; border: 1px solid #2a2a3e; overflow: hidden; margin-bottom: 2rem; }
+        .chat-header { background: #1a1a2e; padding: 1rem 1.5rem; display: flex; align-items: center; gap: 0.75rem; }
+        .chat-dot { width: 10px; height: 10px; border-radius: 50%; background: #00ff88; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .chat-title { font-weight: 600; }
+        .chat-messages { height: 350px; overflow-y: auto; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+        .message { display: flex; gap: 0.75rem; max-width: 85%; }
+        .message.user { align-self: flex-end; flex-direction: row-reverse; }
+        .message-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+        .message.assistant .message-avatar { background: linear-gradient(135deg, #7b2fff, #00d4ff); }
+        .message.user .message-avatar { background: #2a2a3e; }
+        .message-content { background: #1a1a2e; padding: 0.875rem 1.25rem; border-radius: 16px; line-height: 1.5; }
+        .message.user .message-content { background: #7b2fff; }
+        .chat-input-area { padding: 1rem 1.5rem; background: #0f0f18; border-top: 1px solid #2a2a3e; display: flex; gap: 0.75rem; }
+        .chat-input { flex: 1; background: #1a1a2e; border: 1px solid #2a2a3e; border-radius: 24px; padding: 0.875rem 1.25rem; color: #e0e0e0; font-size: 1rem; outline: none; }
+        .chat-input:focus { border-color: #7b2fff; }
+        .send-btn { background: linear-gradient(135deg, #7b2fff, #00d4ff); border: none; border-radius: 50%; width: 48px; height: 48px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.2s; }
+        .send-btn:hover { transform: scale(1.05); }
+        .send-btn svg { width: 20px; height: 20px; fill: white; }
+        .providers { margin-top: 2rem; }
+        .providers h2 { font-size: 1.25rem; margin-bottom: 1rem; color: #888; text-transform: uppercase; letter-spacing: 0.1em; }
+        .provider-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+        .provider-card { background: #12121a; border: 1px solid #2a2a3e; border-radius: 12px; padding: 1.5rem; text-align: center; transition: border-color 0.3s; }
+        .provider-card:hover { border-color: #7b2fff; }
+        .provider-card h3 { margin-bottom: 0.5rem; }
+        .provider-card p { font-size: 0.85rem; color: #888; }
+        .powered-by { text-align: center; margin-top: 2rem; padding: 1rem; background: #12121a; border-radius: 8px; color: #666; font-size: 0.85rem; }
+        .powered-by a { color: #00d4ff; text-decoration: none; }
+        footer { text-align: center; padding: 2rem; margin-top: 2rem; border-top: 1px solid #1a1a2e; color: #666; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>activeledger.ai</h1>
+            <p class="subtitle">Fleet-ready AI chatbot integration demo</p>
+            <div class="status-bar">
+                <span class="status-item online">● PLATO MCP Connected</span>
+                <span class="status-item">● Cocapn Fleet</span>
+                <span class="status-item">● Cloudflare Pages</span>
+            </div>
+        </header>
+        
+        <div class="chat-container">
+            <div class="chat-header">
+                <div class="chat-dot"></div>
+                <span class="chat-title">Cocapn Fleet AI</span>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message assistant">
+                    <div class="message-avatar">🤖</div>
+                    <div class="message-content">Ahoy! I'm connected to the Cocapn fleet via PLATO MCP. I can access the knowledge graph and help navigate the fleet. What can I help you with today?</div>
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Ask about the fleet, knowledge graph, or any domain..." onkeypress="if(event.key==='Enter')sendMessage()">
+                <button class="send-btn" onclick="sendMessage()">
+                    <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                </button>
+            </div>
+        </div>
+        
+        <div class="providers">
+            <h2>Available Providers</h2>
+            <div class="provider-grid">
+                <div class="provider-card">
+                    <h3>🧠 GLM (z.ai)</h3>
+                    <p>Primary reasoning engine</p>
+                </div>
+                <div class="provider-card">
+                    <h3>🌊 DeepSeek</h3>
+                    <p>Fast second opinions</p>
+                </div>
+                <div class="provider-card">
+                    <h3>🌙 Kimi (Moonshot)</h3>
+                    <p>Deep research & analysis</p>
+                </div>
+                <div class="provider-card">
+                    <h3>🔮 Oracle1</h3>
+                    <p>Knowledge keeper</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="powered-by">
+            Powered by <a href="https://github.com/SuperInstance">SuperInstance</a> fleet infrastructure · 
+            Built on <a href="https://cocapn.ai">Cocapn</a> principles · 
+            <a href="https://github.com/SuperInstance/activeledger.ai">View Source</a>
+        </div>
+    </div>
+    
+    <footer>
+        <p>activeledger.ai · Part of the Cocapn fleet</p>
+        <p style="margin-top: 0.5rem;">The lighthouse keeper monitors agent proximity. Radar rings = fleet discovery.</p>
+    </footer>
+
+    <script>
+        let messageCount = 0;
+        
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text) return;
+            
+            const messages = document.getElementById('chatMessages');
+            
+            // Add user message
+            messages.innerHTML += `
+                <div class="message user">
+                    <div class="message-avatar">👤</div>
+                    <div class="message-content">${escapeHtml(text)}</div>
+                </div>
+            `;
+            
+            input.value = '';
+            messages.scrollTop = messages.scrollHeight;
+            
+            // Simulate response (PLATO MCP would be called here)
+            messages.innerHTML += `
+                <div class="message assistant">
+                    <div class="message-avatar">🤖</div>
+                    <div class="message-content">${getDynamicResponse(text)}</div>
+                </div>
+            `;
+            messages.scrollTop = messages.scrollHeight;
+        }
+        
+        function escapeHtml(text) {
+            return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+        
+        function getDynamicResponse(input) {
+            const lower = input.toLowerCase();
+            if (lower.includes('hello') || lower.includes('hi')) {
+                return "Welcome aboard! The fleet is ready. How can I help navigate your request?";
+            }
+            if (lower.includes('fleet')) {
+                return "The Cocapn fleet spans 90+ repos, 48 npm packages, and 18 crates. Every agent leaves more capable than they arrived. That's the dojo model.";
+            }
+            if (lower.includes('cocapn') || lower.includes('keeper')) {
+                return "The lighthouse keeper monitors agent proximity. Radar rings = fleet discovery. Architecture IS the brand.";
+            }
+            if (lower.includes('mcp') || lower.includes('plato')) {
+                return "PLATO is the fleet's knowledge graph - 10,000+ tiles of context, constantly learning. MCP tools connect agents to shared memory.";
+            }
+            return `Good question! I've noted your query about "${escapeHtml(input.substring(0,50))}..." — the fleet will process this through PLATO MCP. Try asking about 'fleet', 'cocapn', or 'mcp' for specific responses.`;
+        }
+    </script>
+</body>
+</html>
