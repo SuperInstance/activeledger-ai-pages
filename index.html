@@ -1,70 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Activeledger.ai — Fleet Activity Ledger</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: system-ui, sans-serif; background: #0a1628; color: #e2e8f0; min-height: 100vh; }
-        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
-        header { text-align: center; padding: 3rem 0; border-bottom: 2px solid #1e3a5f; }
-        h1 { font-size: 2.5rem; color: #a855ff; margin-bottom: 0.5rem; }
-        .subtitle { color: #94a3b8; font-size: 1.1rem; }
-        .fleet-badge { display: inline-block; background: #1e3a5f; padding: 0.3rem 1rem; border-radius: 20px; font-size: 0.8rem; color: #a855ff; margin-top: 1rem; }
-        .status-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 2rem 0; }
-        .status-card { background: #0f2744; border: 1px solid #1e4d7b; border-radius: 12px; padding: 1.5rem; }
-        .status-card h3 { color: #a855ff; font-size: 0.9rem; margin-bottom: 0.5rem; }
-        .status-card .value { font-size: 1.5rem; font-weight: bold; color: #fff; }
-        .status-card .sub { font-size: 0.75rem; color: #64748b; }
-        .plato-status { background: #1a2744; border: 1px solid #2d4a6f; border-radius: 8px; padding: 1rem; margin: 2rem 0; text-align: center; }
-        .plato-status .label { font-size: 0.75rem; color: #64748b; }
-        .plato-status .value { color: #22c55e; font-size: 1.1rem; font-weight: bold; }
-        footer { text-align: center; padding: 2rem; color: #64748b; font-size: 0.8rem; border-top: 1px solid #1e3a5f; margin-top: 2rem; }
-        a { color: #a855ff; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Activeledger — Financial Activity Ledger</title>
+  <style>
+    :root { --bg: #0a0e17; --surface: #121825; --border: #1e2a3a; --text: #e2e8f0; --muted: #64748b; --accent: #22c55e; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 3rem; border-bottom: 1px solid var(--border); }
+    .logo { font-weight: 700; font-size: 1.2rem; }
+    .hero { text-align: center; padding: 5rem 0 3rem; }
+    .hero h1 { font-size: 3rem; font-weight: 700; margin-bottom: 1.25rem; }
+    .hero h1 span { color: var(--accent); }
+    .hero .sub { font-size: 1.25rem; color: var(--muted); max-width: 600px; margin: 0 auto 2rem; }
+    .badge-row { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+    .badge { background: var(--surface); border: 1px solid var(--border); padding: 0.35rem 0.85rem; border-radius: 20px; font-size: 0.8rem; }
+    .section { padding: 4rem 0; }
+    .section h2 { font-size: 2rem; margin-bottom: 0.75rem; }
+    .section .lead { color: var(--muted); max-width: 680px; margin-bottom: 2.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+    .card h3 { font-size: 1.1rem; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
+    .card p { color: var(--muted); font-size: 0.9rem; }
+    .plato-box { background: linear-gradient(135deg, #0f2a1a 0%, #0a1a10 100%); border: 1px solid #1a3a20; border-radius: 16px; padding: 2rem; text-align: center; margin: 2rem 0; }
+    .plato-box h3 { font-size: 1.3rem; margin-bottom: 1rem; color: var(--accent); }
+    .plato-box p { color: var(--muted); max-width: 560px; margin: 0 auto; }
+    .stats-row { display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; margin-top: 1.5rem; }
+    .stat { text-align: center; }
+    .stat .num { font-size: 2rem; font-weight: 700; color: var(--accent); }
+    .stat .label { font-size: 0.8rem; color: var(--muted); }
+    .cta { text-align: center; padding: 4rem 0; }
+    .cta h2 { font-size: 2.25rem; margin-bottom: 1rem; }
+    .cta p { color: var(--muted); margin-bottom: 2rem; }
+    .btn { display: inline-block; background: var(--accent); color: white; padding: 0.875rem 2rem; border-radius: 8px; font-weight: 600; text-decoration: none; }
+    .live-bar { background: var(--surface); border-top: 1px solid var(--border); padding: 0.75rem 0; text-align: center; }
+    .live-dot { display: inline-block; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; margin-right: 0.4rem; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+    footer { border-top: 1px solid var(--border); padding: 2rem 0; text-align: center; color: var(--muted); font-size: 0.85rem; }
+    @media (max-width: 768px) { .hero h1 { font-size: 2rem; } }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>📒 Activeledger.ai</h1>
-            <p class="subtitle">Fleet Activity Ledger — immutable record of all agent actions</p>
-            <span class="fleet-badge">⚡ SuperInstance Fleet Agent</span>
-        </header>
-        <div class="status-grid">
-            <div class="status-card"><h3>Transactions</h3><div class="value">12,847</div><div class="sub">Total logged</div></div>
-            <div class="status-card"><h3>Today</h3><div class="value">342</div><div class="sub">New entries</div></div>
-            <div class="status-card"><h3>Agents</h3><div class="value">23</div><div class="sub">Writing</div></div>
-        </div>
-        <div class="features">
-            <h2>Capabilities</h2>
-            <div class="feature-list">
-                <div class="feature">
-                    <h4>📒 Immutable Records</h4>
-                    <p>Record all fleet agent actions permanently</p>
-                </div>
-                <div class="feature">
-                    <h4>🔍 Audit Trail</h4>
-                    <p>Trace any action back to its origin agent</p>
-                </div>
-                <div class="feature">
-                    <h4>📊 Activity Index</h4>
-                    <p>Index all fleet activity for fast lookup</p>
-                </div>
-                <div class="feature">
-                    <h4>⚖️ Compliance Log</h4>
-                    <p>Maintain compliance records for the fleet</p>
-                </div>
-            </div>
-        </div>
-        <div class="plato-status">
-            <div class="label">PLATO CONNECTION</div>
-            <div class="value">● Connected — 1,447 rooms, 23 agents</div>
-        </div>
-        <footer>
-            <p>Activeledger.ai — Part of the SuperInstance Fleet</p>
-            <p>PLATO Room: <code>activeledger-ai</code> · Agent: activeledger-agent</p>
-        </footer>
+  <nav>
+    <div class="logo">Activeledger</div>
+    <div class="badge" style="border-color: var(--accent); color: var(--accent);">🟢 PLATO Connected</div>
+  </nav>
+  <div class="container hero">
+    <h1>Every dollar in <span>Compounded.</span></h1>
+    <p class="sub">Activeledger logs financial transactions as PLATO tiles. Queryable audit trail of every dollar.</p>
+    <div class="badge-row">
+      <span class="badge">Delta Recording</span>
+      <span class="badge">Presence Tracking</span>
+      <span class="badge">Queryable History</span>
     </div>
+  </div>
+  <section class="section">
+    <div class="container">
+      <h2>Everything That Matters, Filed</h2>
+      <p class="lead">Stop losing track. Start compounding.</p>
+      <div class="grid-3">
+        <div class="card">
+          <h3>💰 Transaction Logging</h3>
+          <p>File every transaction. Amount, category, vendor, context. Quick entry. Complete record.</p>
+        </div>
+        <div class="card">
+          <h3>📊 Spending Patterns</h3>
+          <p>PLATO surfaces your spending patterns. 'Food is 40% of discretionary spend.' 'Subscriptions renew in March.'</p>
+        </div>
+        <div class="card">
+          <h3>🔍 Budget Queries</h3>
+          <p>Ask questions across your financial history. 'What did I spend on travel last year?' 'Which vendors are recurring?'</p>
+        </div>
+        <div class="card">
+          <h3>📈 Trend Analysis</h3>
+          <p>Track financial trends over time. Income, expenses, savings rate. The ledger that builds your financial picture.</p>
+        </div>
+        <div class="card">
+          <h3>🛡️ Audit Trail</h3>
+          <p>Every transaction is provenance-signed in PLATO. Tamper-evident financial history.</p>
+        </div>
+        <div class="card">
+          <h3>📝 Category Intelligence</h3>
+          <p>Learn what categories drive spending. 'Entertainment spikes before winter.' 'Gear purchases correlate with project starts.'</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+  <div class="container">
+    <div class="plato-box">
+      <h3>🔮 PLATO: The Intelligence Layer</h3>
+      <p>Activeledger logs financial transactions as PLATO tiles. Queryable audit trail of every dollar. PLATO's delta recording means you store what changed — not the full state. 95-99% storage reduction. 100% accuracy. Your data compounds over time, not just fills up.</p>
+      <div class="stats-row">
+        <div class="stat"><div class="num">95-99%</div><div class="label">Storage Reduction</div></div>
+        <div class="stat"><div class="num">100%</div><div class="label">Record Accuracy</div></div>
+        <div class="stat"><div class="num">∞</div><div class="label">Compounding Value</div></div>
+      </div>
+    </div>
+  </div>
+  <section class="section" style="background: var(--surface);">
+    <div class="container">
+      <h2>Why Not Just a Spreadsheet?</h2>
+      <div class="grid-3" style="margin-top: 1.5rem;">
+        <div class="card"><h3>📊 Spreadsheets</h3><p>Static snapshots. Manually updated. No search. No cross-reference. No intelligence.</p></div>
+        <div class="card"><h3>🔮 PLATO Rooms</h3><p>Dynamic, queryable, accumulating. Ask questions. Surface patterns. Data compounds over time.</p></div>
+        <div class="card"><h3>⚡ Both</h3><p>Use PLATO for presence tracking and pattern detection. Export to spreadsheets when you need the table view.</p></div>
+      </div>
+    </div>
+  </section>
+  <section class="cta">
+    <div class="container">
+      <h2>Start Compounding Your Activeledgerlog Intelligence</h2>
+      <p>Every entry compounds. Every query surfaces something new.</p>
+      <a href="https://github.com/SuperInstance/activeledger-agent" class="btn">View on GitHub →</a>
+    </div>
+  </section>
+  <div class="live-bar">
+    <span><span class="live-dot"></span>PLATO rooms active — intelligence compounding</span>
+  </div>
+  <footer>
+    <p>Activeledger is part of the Cocapn fleet.</p>
+  </footer>
 </body>
 </html>
