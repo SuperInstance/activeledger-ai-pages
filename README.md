@@ -1,29 +1,26 @@
 # activeledger-ai-pages
 
-GitHub Pages source for [activeledger.ai](https://activeledger.ai).
+GitHub Pages source for [activeledger.ai](https://activeledger.ai) — the active ledger domain in the Cocapn Fleet.
 
-Part of the **Cocapn Fleet** — a constellation of domain-specific landing pages and AI agents.
+## What's Here
 
-## About
+Static site assets (HTML, CSS, images) deployed to GitHub Pages. The site describes the active ledger agent and links to the fleet.
 
-This repository contains the static site assets (HTML, CSS, images) deployed to GitHub Pages for the activeledger.ai domain.
+## Live Site
+
+**[activeledger.ai](https://activeledger.ai)**
 
 ## Fleet Context
 
-The Cocapn Fleet operates 20+ interconnected domains, each with its own personality and purpose:
+Part of the [Cocapn Fleet](https://cocapn.ai) — 20+ interconnected domains, each with its own AI agent:
 
 - 🦀 [cocapn.ai](https://cocapn.ai) — Fleet hub
-- 🎮 [dmlog.ai](https://dmlog.ai) — Tabletop RPG tools
 - 🔨 [makerlog.ai](https://makerlog.ai) — Maker project tracking
-- 🌙 [luciddreamer.ai](https://luciddreamer.ai) — Lucid dreaming journal
 - 📚 [studylog.ai](https://studylog.ai) — Study partner
 - 🎣 [fishinglog.ai](https://fishinglog.ai) — Fishing intelligence
-- 🎮 [playerlog.ai](https://playerlog.ai) — Gaming tracker
 - 🔮 [purplepincher.org](https://purplepincher.org) — Agent connection portal
-- And more...
 
-## Links
+## Related
 
-- Live site: https://activeledger.ai
-- Fleet hub: https://cocapn.ai
-- Fleet dashboard: http://147.224.38.131:4046/
+- [activeledger-agent](https://github.com/SuperInstance/activeledger-agent) — PLATO domain agent
+- [businesslog-ai-pages](https://github.com/SuperInstance/businesslog-ai-pages) — Sister domain
